@@ -1,5 +1,7 @@
 use clap::{Parser};
 use gross_pitaeveskii::{chemical_potential, imaginargy_time_evolution, initial_wave_function_builder, laplacian, radial_grid_builder};
+use std::fs::OpenOptions;
+use std::io::Write;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -22,7 +24,7 @@ struct Cli {
     time_iterations: u32,
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
 
     let cli = Cli::parse();
 
@@ -58,5 +60,16 @@ fn main() {
     let chemical_potential_r = chemical_potential(&ground_state, &laplacial_ground_state,
         &radial_grid, non_linear_strength);
 
-    
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open("chemical_potential_r.txt")?;
+
+    for i in 0..grid_size {
+        writeln!(file, "{:>15.10} {:>15.10}", radial_grid[i], chemical_potential_r[i])?;
+    }
+
+    Ok(())
+
 }
