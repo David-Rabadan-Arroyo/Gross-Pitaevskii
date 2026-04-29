@@ -1,14 +1,14 @@
-pub fn radial_grid (step: f64, grid_size: usize) -> Vec<f64> {
+pub fn radial_grid (r_step: f64, grid_size: usize) -> Vec<f64> {
     let mut radial_grid = vec![0.;grid_size];
     for i in 0..grid_size {
-        radial_grid[i] = step*(i as f64);
+        radial_grid[i] = r_step*(i as f64);
     }
     radial_grid
 }
 
 /// Returns a normalized gaussian radial wave function up to a cutoff. 
 /// `R(r) = (2*alpha^{3/2}/pi^{4})*r*exp(-1/2*alpha^2*r^2)`
-pub fn starting_wave_function(alpha: f64, radial_grid: Vec<f64>) -> Vec<f64> {
+pub fn initial_wave_function(alpha: f64, radial_grid: &Vec<f64>) -> Vec<f64> {
 
     use std::f64::consts::PI;
 
@@ -27,60 +27,137 @@ pub fn starting_wave_function(alpha: f64, radial_grid: Vec<f64>) -> Vec<f64> {
 }
 
 /// Given a wave function, returns the laplacian of the wave function
-/// computed by the finite diference method in 1d.
-pub fn laplacian_wave_function(wave_function: &Vec<f64>, step: f64) -> Vec<f64> {
+/// computed as the finite diference in 1d.
+pub fn laplacian(wave_function: &Vec<f64>, r_step: f64) -> Vec<f64> {
     
     let grid_size = wave_function.len();
 
     let mut laplacian_wave_function = vec![0.;grid_size];
 
     for i in 1..(grid_size-1) {
-        laplacian_wave_function[i] = (wave_function[i-1] + wave_function[i+1]-2.*wave_function[i])/(step*step)
+        laplacian_wave_function[i] = (wave_function[i-1] + wave_function[i+1] - 2.*wave_function[i])/(r_step*r_step)
     }
-    laplacian_wave_function[grid_size-1] = (wave_function[grid_size-2]- 2.*wave_function[grid_size-1])/(step*step);
+    laplacian_wave_function[grid_size-1] = (wave_function[grid_size-2]- 2.*wave_function[grid_size-1])/(r_step*r_step);
 
     laplacian_wave_function
 
 }
 
-pub fn imaginargy_time_evolution(a0: f64, aa: f64, use_harmonic_oscilator: bool, iterations: usize, wave_function: &Vec<f64>, step: f64, radial_grid: &Vec<f64>) -> Vec<f64> {
+pub fn energy(wave_function: &Vec<f64>, laplacian_wave_function: &Vec<f64>, radial_grid: &Vec<f64>, non_linear_strength: f64) -> f64 {
     
-    let cequ = if use_harmonic_oscilator {0.} else {a0*aa};
+    let grid_size = wave_function.len();
 
-    let as3n = aa*a0*a0*a0;
+    let r_step = radial_grid[1] - radial_grid[0];
+
+    let mut energy = 0.;
+
+    for i in 1..grid_size {
+        energy = energy - 0.5*wave_function[i]*laplacian_wave_function[i]
+        + 0.5*radial_grid[i].powi(2)*wave_function[i].powi(2)
+        + 0.5*non_linear_strength*radial_grid[i].powi(2)*(wave_function[i]/radial_grid[i]).powi(4); // simplify?
+    }
+
+    energy = energy*r_step;
+
+    energy
+}
+
+pub fn chemical_potential(wave_function: &Vec<f64>, laplacian_wave_function: &Vec<f64>, radial_grid: &Vec<f64>, non_linear_strength: f64) -> Vec<f64> {
+
+    let grid_size = wave_function.len();
+
+    let mut chemical_potential_r = vec![0.; grid_size];
+
+    for i in 1..grid_size {
+        chemical_potential_r[i] = -0.5*laplacian_wave_function[i]/wave_function[i] 
+        + 0.5*radial_grid[i].powi(2) + non_linear_strength*(wave_function[i]/radial_grid[i]).powi(2);
+    }
+
+    chemical_potential_r
+}
+
+pub fn norm(wave_function: &Vec<f64>, r_step: f64) -> f64 {
+
+    let grid_size = wave_function.len();
+
+    let mut norm_wave_function = 0.;
+
+    for i in 1..grid_size {
+        norm_wave_function = norm_wave_function + wave_function[i]*wave_function[i];
+    }
+
+    norm_wave_function = (norm_wave_function*r_step).sqrt();
+
+    norm_wave_function
+}
+
+pub fn imaginary_time_step(wave_function: &Vec<f64>, time_step: f64, chemical_potential: &Vec<f64>) -> Vec<f64> {
+
+    let grid_size = wave_function.len();
+
+    let mut new_wave_function = vec![0.;grid_size];
+
+    for i in 1..grid_size {
+        new_wave_function[i] = wave_function[i] - time_step*chemical_potential[i]*wave_function[i];
+    }
+
+    new_wave_function
+}
+
+pub fn imaginargy_time_evolution(use_harmonic_oscilator: bool, 
+    scattering_length: f64, 
+    number_atoms: u32, 
+    iterations: usize, 
+    time_step: f64,
+    wave_function: &Vec<f64>,
+    radial_grid: &Vec<f64>) -> Vec<f64> {
+    
+    let non_linear_strength = if use_harmonic_oscilator {0.} else {scattering_length*(number_atoms as f64)};
 
     let grid_size = radial_grid.len();
 
-    for i in 0..iterations {
-        let mut xnorm = 0.;
-        let mut ene0 = 0.;
+    let r_step = radial_grid[1] - radial_grid[0];
 
-        let mut laplacian_wave_function = laplacian_wave_function(wave_function, step);
+    let mut ground_state = vec![0.;grid_size];
 
-        for j in 0..grid_size {
-            
-        }
+    for i in 0..grid_size {
+        ground_state[i] = wave_function[i]
     }
 
-    
-    todo!()
+    for _i in 0..iterations {
+        let laplacian_wave_function = laplacian(&ground_state, r_step);
+        
+        let chemical_potential_r = chemical_potential(&ground_state, &laplacian_wave_function, radial_grid, non_linear_strength);
+
+        let new_wave_function = imaginary_time_step(&ground_state, time_step, &chemical_potential_r);
+
+        let norm_wave_function = norm(&new_wave_function, r_step);
+
+        for j in 0..grid_size {
+            ground_state[j] = new_wave_function[j]/norm_wave_function;
+        }
+
+    }
+
+    ground_state
+
 }
 
 
 #[cfg(test)]
 
 mod tests{
-    use crate::{radial_grid, starting_wave_function};
+    use crate::{radial_grid, initial_wave_function};
 
     #[test]
     fn test_starting_wave_funciton() {
         let alpha = 0.5;
-        let step = 0.020;
+        let r_step = 0.020;
         let grid_size = 300;
 
-        let radial_grid = radial_grid(step, grid_size);
+        let radial_grid = radial_grid(r_step, grid_size);
 
-        let initial_wave_function = starting_wave_function(alpha, radial_grid);
+        let initial_wave_function = initial_wave_function(alpha, &radial_grid);
 
         let expected_inital_wave_function = vec![
             0.0000000000,0.0106219882,0.0212407901,0.0318532208,0.0424560988,0.0530462473,
