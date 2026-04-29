@@ -1,14 +1,17 @@
-pub fn radial_grid (r_step: f64, grid_size: usize) -> Vec<f64> {
+pub fn radial_grid_builder (r_step: f64, grid_size: usize) -> Vec<f64> {
+
     let mut radial_grid = vec![0.;grid_size];
+    
     for i in 0..grid_size {
         radial_grid[i] = r_step*(i as f64);
     }
+    
     radial_grid
 }
 
 /// Returns a normalized gaussian radial wave function up to a cutoff. 
 /// `R(r) = (2*alpha^{3/2}/pi^{4})*r*exp(-1/2*alpha^2*r^2)`
-pub fn initial_wave_function(alpha: f64, radial_grid: &Vec<f64>) -> Vec<f64> {
+pub fn initial_wave_function_builder(alpha: f64, radial_grid: &Vec<f64>) -> Vec<f64> {
 
     use std::f64::consts::PI;
 
@@ -107,7 +110,7 @@ pub fn imaginary_time_step(wave_function: &Vec<f64>, time_step: f64, chemical_po
 pub fn imaginargy_time_evolution(use_harmonic_oscilator: bool, 
     scattering_length: f64, 
     number_atoms: u32, 
-    iterations: usize, 
+    time_iterations: usize, 
     time_step: f64,
     wave_function: &Vec<f64>,
     radial_grid: &Vec<f64>) -> Vec<f64> {
@@ -124,7 +127,7 @@ pub fn imaginargy_time_evolution(use_harmonic_oscilator: bool,
         ground_state[i] = wave_function[i]
     }
 
-    for _i in 0..iterations {
+    for _i in 0..time_iterations {
         let laplacian_wave_function = laplacian(&ground_state, r_step);
         
         let chemical_potential_r = chemical_potential(&ground_state, &laplacian_wave_function, radial_grid, non_linear_strength);
@@ -147,7 +150,7 @@ pub fn imaginargy_time_evolution(use_harmonic_oscilator: bool,
 #[cfg(test)]
 
 mod tests{
-    use crate::{radial_grid, initial_wave_function};
+    use crate::{initial_wave_function_builder, radial_grid_builder};
 
     #[test]
     fn test_starting_wave_funciton() {
@@ -155,9 +158,9 @@ mod tests{
         let r_step = 0.020;
         let grid_size = 300;
 
-        let radial_grid = radial_grid(r_step, grid_size);
+        let radial_grid = radial_grid_builder(r_step, grid_size);
 
-        let initial_wave_function = initial_wave_function(alpha, &radial_grid);
+        let initial_wave_function = initial_wave_function_builder(alpha, &radial_grid);
 
         let expected_inital_wave_function = vec![
             0.0000000000,0.0106219882,0.0212407901,0.0318532208,0.0424560988,0.0530462473,
