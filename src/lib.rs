@@ -46,7 +46,7 @@ pub fn laplacian(wave_function: &Vec<f64>, r_step: f64) -> Vec<f64> {
 
 }
 
-pub fn energy(wave_function: &Vec<f64>, laplacian_wave_function: &Vec<f64>, radial_grid: &Vec<f64>, non_linear_strength: f64) -> f64 {
+pub fn total_energy(wave_function: &Vec<f64>, laplacian_wave_function: &Vec<f64>, radial_grid: &Vec<f64>, non_linear_strength: f64) -> f64 {
     
     let grid_size = wave_function.len();
 
