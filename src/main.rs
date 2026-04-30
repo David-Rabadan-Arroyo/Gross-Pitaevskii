@@ -8,11 +8,13 @@ use std::io::Write;
 struct Cli {
     #[arg(long)]
     use_harmonic_oscilator: bool,
+    #[arg(long)]
+    thomas_fermi_aproximation: bool,
     /// scattering length in harmonic oscilator units (a0 of old fortran program)
     scattering_length: f64,
     /// number of integration steps in r-grid (n1 of old fortran program)
     grid_size: u32,
-    /// integration step in r-space (step of old fortran program))
+    /// integration step in r-space (step of old fortran program)
     r_step: f64,
     /// number of atoms (aa of old fortran program)
     number_atoms: u32,
@@ -31,6 +33,8 @@ fn main() -> std::io::Result<()> {
     println!("{:?}", cli);
 
     let use_harmonic_oscilator: bool = cli.use_harmonic_oscilator;
+
+    let thomas_fermi_aproximation = cli.thomas_fermi_aproximation;
 
     let scattering_length = cli.scattering_length;
 
@@ -53,7 +57,7 @@ fn main() -> std::io::Result<()> {
     let ground_state = imaginargy_time_evolution(use_harmonic_oscilator, scattering_length, 
         number_atoms, time_iterations, time_step, &initial_wave_function, &radial_grid);
 
-    let laplacial_ground_state = laplacian(&ground_state, r_step);
+    let laplacial_ground_state: Vec<f64> = if thomas_fermi_aproximation {vec![0.; grid_size]} else {laplacian(&ground_state, r_step)};
 
     let non_linear_strength =  if use_harmonic_oscilator {0.} else {scattering_length*(number_atoms as f64)};
 
