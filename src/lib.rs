@@ -46,6 +46,7 @@ pub fn laplacian(wave_function: &Vec<f64>, r_step: f64) -> Vec<f64> {
 
 }
 
+/// Computes the total energy for the Gross-Pitaeveskii equation 
 pub fn total_energy(wave_function: &Vec<f64>, laplacian_wave_function: &Vec<f64>, radial_grid: &Vec<f64>, non_linear_strength: f64) -> f64 {
     
     let grid_size = wave_function.len();
@@ -65,6 +66,7 @@ pub fn total_energy(wave_function: &Vec<f64>, laplacian_wave_function: &Vec<f64>
     energy
 }
 
+/// Computes the chemical potential as a funtion of position for the Gross-Pitaeveskii equation
 pub fn chemical_potential(wave_function: &Vec<f64>, laplacian_wave_function: &Vec<f64>, radial_grid: &Vec<f64>, non_linear_strength: f64) -> Vec<f64> {
 
     let grid_size = wave_function.len();
@@ -79,6 +81,7 @@ pub fn chemical_potential(wave_function: &Vec<f64>, laplacian_wave_function: &Ve
     chemical_potential_r
 }
 
+/// Computes the norm of a wave funtion
 pub fn norm(wave_function: &Vec<f64>, r_step: f64) -> f64 {
 
     let grid_size = wave_function.len();
@@ -107,6 +110,7 @@ pub fn imaginary_time_step(wave_function: &Vec<f64>, time_step: f64, chemical_po
     new_wave_function
 }
 
+/// Evolves a wave function with the method of imaginary time to optain the gound state
 pub fn imaginargy_time_evolution(use_harmonic_oscilator: bool, 
     scattering_length: f64, 
     number_atoms: u32, 
@@ -145,7 +149,6 @@ pub fn imaginargy_time_evolution(use_harmonic_oscilator: bool,
     ground_state
 
 }
-
 
 #[cfg(test)]
 

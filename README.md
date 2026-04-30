@@ -1,7 +1,6 @@
 # Simulation of the Gross-Pitaeveskii equation
 
-This program solves the Gross-Pitaeveskii equation in 1 dimension for a uniform
-grid. The arguments are:
+This program solves the Gross-Pitaeveskii equation in 1 dimension for a uniform grid. The arguments are:
 
 - `scattering_length: f64` scattering length in harmonic oscilator units (`a0` of old fortran program)
 - `grid_size: u32` number of integration steps in r-grid (`n1` of old fortran program)
@@ -11,7 +10,10 @@ grid. The arguments are:
 - `alpha: f64` the starting parameter for the harmonic oscilator function
 - `time_iterations: u32` number of iterations for the imaginary time evolution (`iter` of old fortran program)
 
-The solver also suports the non-linear interactionless aproximation and the 
-thomas-fermi aproximation. To use this it should be provided the flags 
-`--use-harmonic-oscilator` or `--thomas-fermi-aproximation`.
+The solver also suports the non-linear interactionless aproximation and the thomas-fermi aproximation. 
+To use this it should be provided the flags `--use-harmonic-oscilator` or `--thomas-fermi-aproximation`.
+
+The program returns 3 files called **chemical_potential_r.txt**, **density_r.txt** and **values.txt** with
+the values of the chemical potential at each node of the grid, the density at each node of the grid and a
+set of values that are used or analizing the solution.
 

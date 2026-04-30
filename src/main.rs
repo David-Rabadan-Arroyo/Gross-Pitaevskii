@@ -68,10 +68,12 @@ fn main() -> std::io::Result<()> {
         .write(true)
         .create(true)
         .truncate(true)
-        .open("datos/chemical_potential_r.txt")?;
+        .open("chemical_potential_r.txt")?;
 
+
+    writeln!(file_chemical_potential, "{:>15} {:>20}", "Radius", "Chemical potential")?;
     for i in 1..grid_size {
-        writeln!(file_chemical_potential, "{:>15.10} {:>15.10}", radial_grid[i], chemical_potential_r[i])?;
+        writeln!(file_chemical_potential, "{:>15.10} {:>20.10}", radial_grid[i], chemical_potential_r[i])?;
     }
 
     let energy: f64 = total_energy(&ground_state, &laplacial_ground_state, &radial_grid, non_linear_strength);
@@ -103,33 +105,34 @@ fn main() -> std::io::Result<()> {
     norm_density = norm_density*r_step;
 
     let values = [
-        energy, 
-        average_chemical_potential,
-        kinetic_energy,
-        total_potential,
-        potencial_harmonic_oscilator,
-        internal_potential,
-        average_radius,
-        average_radius_squared,
-        norm_density,
+        ("energy", energy),
+        ("average_chemical_potential", average_chemical_potential),
+        ("kinetic_energy", kinetic_energy),
+        ("total_potential", total_potential),
+        ("potencial_harmonic_oscilator", potencial_harmonic_oscilator),
+        ("internal_potential", internal_potential),
+        ("average_radius", average_radius),
+        ("average_radius_squared", average_radius_squared),
+        ("norm_density", norm_density),
     ];
 
     let mut file_values = OpenOptions::new()
         .write(true)
         .create(true)
         .truncate(true)
-        .open("datos/values.txt")?;
+        .open("values.txt")?;
 
-    for i in values {
-        writeln!(file_values, "{:>15.10}", i)?;
+    for (name, value) in values {
+        writeln!(file_values, "{:<30} {:>15.10}", name, value)?;
     }
 
     let mut file_density = OpenOptions::new()
         .write(true)
         .create(true)
         .truncate(true)
-        .open("datos/density_r.txt")?;
+        .open("density_r.txt")?;
 
+    writeln!(file_density, "{:>15} {:>15}", "Radius", "Density")?;
     for i in 1..grid_size {
         writeln!(file_density, "{:>15.10} {:>15.10}", radial_grid[i], density[i])?;
     }
