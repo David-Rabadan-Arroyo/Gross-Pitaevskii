@@ -15,5 +15,5 @@ To use this it should be provided the flags `--use-harmonic-oscilator` or `--tho
 
 The program returns 3 files called **chemical_potential_r.txt**, **density_r.txt** and **values.txt** with
 the values of the chemical potential at each node of the grid, the density at each node of the grid and a
-set of values that are used or analizing the solution.
+set of values that are used for analizing the solution.
 
