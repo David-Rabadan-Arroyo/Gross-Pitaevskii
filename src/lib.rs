@@ -111,7 +111,9 @@ pub fn imaginary_time_step(wave_function: &Vec<f64>, time_step: f64, chemical_po
 }
 
 /// Evolves a wave function with the method of imaginary time to optain the gound state
-pub fn imaginargy_time_evolution(use_harmonic_oscilator: bool, 
+pub fn imaginargy_time_evolution(
+    use_harmonic_oscilator: bool, 
+    thomas_fermi_aproximation: bool,
     scattering_length: f64, 
     number_atoms: u32, 
     time_iterations: usize, 
@@ -132,7 +134,7 @@ pub fn imaginargy_time_evolution(use_harmonic_oscilator: bool,
     }
 
     for _i in 0..time_iterations {
-        let laplacian_wave_function = laplacian(&ground_state, r_step);
+        let laplacian_wave_function = if thomas_fermi_aproximation {vec![0.; grid_size]} else {laplacian(&ground_state, r_step)};
         
         let chemical_potential_r = chemical_potential(&ground_state, &laplacian_wave_function, radial_grid, non_linear_strength);
 
@@ -238,7 +240,7 @@ mod tests{
     
         let initial_wave_function = initial_wave_function_builder(alpha, &radial_grid);
 
-        let ground_state = imaginargy_time_evolution(false, scattering_length, 
+        let ground_state = imaginargy_time_evolution(false, false, scattering_length, 
         number_atoms, time_iterations, time_step, &initial_wave_function, &radial_grid);
 
         let expected_ground_state = vec![

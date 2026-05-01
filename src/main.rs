@@ -54,7 +54,7 @@ fn main() -> std::io::Result<()> {
     
     let initial_wave_function = initial_wave_function_builder(alpha, &radial_grid);
 
-    let ground_state = imaginargy_time_evolution(use_harmonic_oscilator, scattering_length, 
+    let ground_state = imaginargy_time_evolution(use_harmonic_oscilator, thomas_fermi_aproximation, scattering_length, 
         number_atoms, time_iterations, time_step, &initial_wave_function, &radial_grid);
 
     let laplacial_ground_state: Vec<f64> = if thomas_fermi_aproximation {vec![0.; grid_size]} else {laplacian(&ground_state, r_step)};
