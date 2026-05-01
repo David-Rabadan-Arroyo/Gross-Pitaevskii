@@ -68,7 +68,7 @@ fn main() -> std::io::Result<()> {
         .write(true)
         .create(true)
         .truncate(true)
-        .open("chemical_potential_r.txt")?;
+        .open("data/chemical_potential_r.txt")?;
 
 
     writeln!(file_chemical_potential, "{:>15} {:>20}", "Radius", "Chemical potential")?;
@@ -120,7 +120,7 @@ fn main() -> std::io::Result<()> {
         .write(true)
         .create(true)
         .truncate(true)
-        .open("values.txt")?;
+        .open("data/values.txt")?;
 
     for (name, value) in values {
         writeln!(file_values, "{:<30} {:>15.10}", name, value)?;
@@ -130,7 +130,7 @@ fn main() -> std::io::Result<()> {
         .write(true)
         .create(true)
         .truncate(true)
-        .open("density_r.txt")?;
+        .open("data/density_r.txt")?;
 
     writeln!(file_density, "{:>15} {:>15}", "Radius", "Density")?;
     for i in 1..grid_size {
