@@ -21,5 +21,5 @@ set of values that are used for analizing the solution.
 
 1. Compile the program with `cargo build --release`, provided that you have instaled Rust and Cargo.
 2. Make a directory called `data`.
-3. Execute the program with `target/release/gross_pitaveveskii 0.00433 700 0.015 1000000 0.00005 0.3 70000`
+3. Execute the program with `target/release/gross_pitaevskii 0.00433 700 0.015 1000000 0.00005 0.3 70000`
 4. Three new files should be created at `data`.
