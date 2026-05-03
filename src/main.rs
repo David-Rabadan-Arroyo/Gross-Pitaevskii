@@ -81,7 +81,7 @@ fn main() -> std::io::Result<()> {
     let average_radius: f64;
     let mut kinetic_energy = 0.;
     let mut potencial_harmonic_oscilator = 0.;
-    let mut internal_potential = 0.;
+    let mut interaction_potential = 0.;
     let mut average_chemical_potential = 0.;
     let mut density = vec![0.;grid_size];
     let mut norm_density = 0.;
@@ -89,7 +89,7 @@ fn main() -> std::io::Result<()> {
     for i in 1..grid_size {
         kinetic_energy = kinetic_energy + ground_state[i]*laplacial_ground_state[i];
         potencial_harmonic_oscilator = potencial_harmonic_oscilator + radial_grid[i].powi(2)*ground_state[i].powi(2);
-        internal_potential = internal_potential + radial_grid[i].powi(2)*(ground_state[i]/radial_grid[i]).powi(4);
+        interaction_potential = interaction_potential + radial_grid[i].powi(2)*(ground_state[i]/radial_grid[i]).powi(4);
         average_chemical_potential = average_chemical_potential + chemical_potential_r[i]*ground_state[i].powi(2);
         density[i] = (ground_state[i]/radial_grid[i]).powi(2);
         norm_density = norm_density + radial_grid[i].powi(2)*density[i];
@@ -100,8 +100,8 @@ fn main() -> std::io::Result<()> {
     average_chemical_potential = average_chemical_potential*r_step;
     kinetic_energy = -kinetic_energy*r_step*0.5;
     potencial_harmonic_oscilator = 0.5*potencial_harmonic_oscilator*r_step;
-    internal_potential = internal_potential*r_step*non_linear_strength*0.5;
-    let total_potential = potencial_harmonic_oscilator + internal_potential;
+    interaction_potential = interaction_potential*r_step*non_linear_strength*0.5;
+    let total_potential = potencial_harmonic_oscilator + interaction_potential;
     norm_density = norm_density*r_step;
 
     let values = [
@@ -110,7 +110,7 @@ fn main() -> std::io::Result<()> {
         ("kinetic_energy", kinetic_energy),
         ("total_potential", total_potential),
         ("potencial_harmonic_oscilator", potencial_harmonic_oscilator),
-        ("internal_potential", internal_potential),
+        ("interaction_potential", interaction_potential),
         ("average_radius", average_radius),
         ("average_radius_squared", average_radius_squared),
         ("norm_density", norm_density),
