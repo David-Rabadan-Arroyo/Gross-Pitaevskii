@@ -1,5 +1,5 @@
 use clap::{Parser};
-use gross_pitaeveskii::{chemical_potential, total_energy, imaginargy_time_evolution, initial_wave_function_builder, laplacian, radial_grid_builder};
+use gross_pitaevskii::{chemical_potential, total_energy, imaginargy_time_evolution, initial_wave_function_builder, laplacian, radial_grid_builder};
 use std::fs::OpenOptions;
 use std::io::Write;
 
